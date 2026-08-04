@@ -1,0 +1,6 @@
+{
+  "name": "JOLAS SAVE",
+  "description": "A premium, secure, and responsive fintech savings platform with dynamic goals, instant receipts, and complete customer/admin dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

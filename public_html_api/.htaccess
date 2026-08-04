@@ -1,0 +1,12 @@
+Options -Indexes
+RewriteEngine On
+
+# Route all /api/* requests to the PHP API handler
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+
+# React SPA fallback — serve index.html for all non-file, non-api routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule . /index.html [L]

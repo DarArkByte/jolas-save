@@ -1,0 +1,149 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  fullName              String   @db.VarChar(255)
+  username              String   @unique @db.VarChar(100)
+  email                 String   @unique @db.VarChar(255)
+  phoneNumber           String   @db.VarChar(30)
+  passportPhoto         String?  @db.Text
+  dob                   String   @db.VarChar(20)
+  gender                String   @db.VarChar(20)
+  address               String   @db.VarChar(500)
+  state                 String   @db.VarChar(100)
+  lga                   String   @db.VarChar(100)
+  occupation            String   @db.VarChar(255)
+  nextOfKinName         String   @db.VarChar(255)
+  nextOfKinRelationship String   @db.VarChar(100)
+  nextOfKinPhone        String   @db.VarChar(30)
+  bankName              String   @db.VarChar(255)
+  accountNumber         String   @db.VarChar(50)
+  accountName           String   @db.VarChar(255)
+  bvn                   String?  @db.VarChar(20)
+  nin                   String?  @db.VarChar(20)
+  referralCode          String?  @db.VarChar(50)
+  referredBy            String?  @db.VarChar(100)
+  isKycVerified         Boolean  @default(false)
+  kycStatus             String   @default("Unverified") @db.VarChar(50)
+  twoFactorEnabled      Boolean  @default(false)
+  status                String   @default("Active") @db.VarChar(30)
+  passwordHash          String   @db.VarChar(255)
+  role                  String   @default("Customer") @db.VarChar(30)
+  assignedAgentUsername String?  @db.VarChar(100)
+  createdAt             DateTime @default(now())
+}
+
+model SavingsGoal {
+  id              String   @id @db.VarChar(100)
+  name            String   @db.VarChar(255)
+  category        String   @db.VarChar(100)
+  targetAmount    Float
+  frequency       String   @db.VarChar(50)
+  expectedDeposit Float
+  amountSaved     Float    @default(0.0)
+  startDate       String   @db.VarChar(20)
+  endDate         String   @db.VarChar(20)
+  withdrawalDate  String   @db.VarChar(20)
+  reminderEnabled Boolean  @default(true)
+  imageUrl        String?  @db.Text
+  notes           String?  @db.Text
+  status          String   @default("Active") @db.VarChar(30)
+  apy             Float?   @default(0.0)
+  accruedInterest Float?   @default(0.0)
+  username        String?  @db.VarChar(100)
+  createdAt       DateTime @default(now())
+}
+
+model Transaction {
+  id            String   @id @default(uuid())
+  receiptNumber String   @unique @db.VarChar(100)
+  transactionId String   @db.VarChar(100)
+  goalName      String   @db.VarChar(255)
+  goalId        String?  @db.VarChar(100)
+  amount        Float
+  date          String   @db.VarChar(20)
+  time          String   @db.VarChar(20)
+  paymentMethod String   @db.VarChar(255)
+  balanceAfter  Float
+  type          String   @db.VarChar(30)
+  status        String   @db.VarChar(30)
+  customerName  String   @db.VarChar(255)
+  createdAt     DateTime @default(now())
+}
+
+model DepositRequest {
+  id               String   @id @db.VarChar(100)
+  customerId       String   @db.VarChar(100)
+  customerName     String   @db.VarChar(255)
+  customerPhone    String   @db.VarChar(30)
+  customerUsername String   @db.VarChar(100)
+  goalId           String   @db.VarChar(100)
+  goalName         String   @db.VarChar(255)
+  amount           Float
+  createdAt        String   @db.VarChar(30)
+  status           String   @default("Pending") @db.VarChar(50)
+  proofOfPaymentUrl String? @db.Text
+  notes            String?  @db.Text
+  approvedBy       String?  @db.VarChar(255)
+  approvedAt       String?  @db.VarChar(30)
+  declinedBy       String?  @db.VarChar(255)
+  declinedAt       String?  @db.VarChar(30)
+  declineReason    String?  @db.Text
+  receiptNumber    String?  @db.VarChar(100)
+  assignedAgentId  String?  @db.VarChar(100)
+  auditLogJson     String   @default("[]") @db.LongText
+  updatedAt        DateTime @updatedAt
+}
+
+model WithdrawalRequest {
+  id             String   @id @db.VarChar(100)
+  goalId         String   @db.VarChar(100)
+  goalName       String   @db.VarChar(255)
+  amount         Float
+  withdrawalType String   @db.VarChar(50)
+  reason         String   @db.Text
+  bankAccount    String   @db.VarChar(255)
+  date           String   @db.VarChar(20)
+  status         String   @default("Pending") @db.VarChar(30)
+  fee            Float    @default(0.0)
+  createdAt      DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  date      String   @db.VarChar(20)
+  time      String   @db.VarChar(20)
+  isRead    Boolean  @default(false)
+  type      String   @default("info") @db.VarChar(30)
+  username  String?  @db.VarChar(100)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   @db.Text
+  userId    String   @db.VarChar(100)
+  username  String   @db.VarChar(100)
+  role      String   @db.VarChar(50)
+  ipAddress String   @db.VarChar(50)
+  device    String   @db.VarChar(255)
+  browser   String   @db.VarChar(255)
+  timestamp String   @db.VarChar(30)
+}
+
+model SavingsCategory {
+  id    String @id @db.VarChar(50)
+  name  String @db.VarChar(100)
+  icon  String @db.VarChar(20)
+  color String @default("from-slate-400 to-slate-600") @db.VarChar(100)
+}
