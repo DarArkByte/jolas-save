@@ -269,12 +269,49 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       {/* TAB CONTENTS */}
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs">
         
-        {/* PAYOUTS Review Approval */}
+        {/* PAYOUTS & DEPOSITS Review Approval */}
         {activeSubTab === 'payouts' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* PENDING DEPOSIT APPROVALS HIGHLIGHT BANNER */}
+            {depositRequests.filter(r => 
+              r.status === DepositRequestStatus.PENDING ||
+              r.status === DepositRequestStatus.AWAITING_VERIFICATION ||
+              r.status === DepositRequestStatus.WAITING_WHATSAPP ||
+              r.status === DepositRequestStatus.AWAITING_TRANSFER ||
+              ['Pending', 'Awaiting Verification', 'Waiting for WhatsApp Contact', 'Awaiting Transfer'].includes(r.status as string)
+            ).length > 0 && (
+              <div className="bg-amber-50/80 border border-amber-200 p-4.5 rounded-2xl flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-500/10 text-amber-700 rounded-xl flex items-center justify-center font-bold text-sm">
+                    ⏳
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-extrabold text-amber-900 uppercase tracking-wider">
+                      Pending Deposit Approvals ({
+                        depositRequests.filter(r => 
+                          r.status === DepositRequestStatus.PENDING ||
+                          r.status === DepositRequestStatus.AWAITING_VERIFICATION ||
+                          r.status === DepositRequestStatus.WAITING_WHATSAPP ||
+                          r.status === DepositRequestStatus.AWAITING_TRANSFER ||
+                          ['Pending', 'Awaiting Verification', 'Waiting for WhatsApp Contact', 'Awaiting Transfer'].includes(r.status as string)
+                        ).length
+                      })
+                    </h4>
+                    <p className="text-[11px] text-amber-800 font-medium">Customer deposit requests are awaiting your verification and account crediting.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleTabChange('deposits')}
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                >
+                  Review &amp; Approve Deposits →
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center justify-between pb-2 border-b">
               <h3 className="font-bold text-xs text-slate-400 uppercase tracking-wider">Awaiting Settlement Approvals</h3>
-              <span className="text-[10px] text-slate-500 font-medium">Click Approve to trigger mock Paystack sandbox settlement</span>
+              <span className="text-[10px] text-slate-500 font-medium">Click Approve to trigger payout settlement</span>
             </div>
 
             {pendingPayouts.length > 0 ? (
