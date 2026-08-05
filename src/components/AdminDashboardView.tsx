@@ -272,42 +272,68 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         {/* PAYOUTS & DEPOSITS Review Approval */}
         {activeSubTab === 'payouts' && (
           <div className="space-y-6">
-            {/* PENDING DEPOSIT APPROVALS HIGHLIGHT BANNER */}
-            {depositRequests.filter(r => 
-              r.status === DepositRequestStatus.PENDING ||
-              r.status === DepositRequestStatus.AWAITING_VERIFICATION ||
-              r.status === DepositRequestStatus.WAITING_WHATSAPP ||
-              r.status === DepositRequestStatus.AWAITING_TRANSFER ||
-              ['Pending', 'Awaiting Verification', 'Waiting for WhatsApp Contact', 'Awaiting Transfer'].includes(r.status as string)
-            ).length > 0 && (
-              <div className="bg-amber-50/80 border border-amber-200 p-4.5 rounded-2xl flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-amber-500/10 text-amber-700 rounded-xl flex items-center justify-center font-bold text-sm">
-                    ⏳
+            {/* PENDING DEPOSIT APPROVALS DIRECT ACTION SECTION */}
+            {(() => {
+              const pendingList = depositRequests.filter(r => 
+                r.status === DepositRequestStatus.PENDING ||
+                r.status === DepositRequestStatus.AWAITING_VERIFICATION ||
+                r.status === DepositRequestStatus.WAITING_WHATSAPP ||
+                r.status === DepositRequestStatus.AWAITING_TRANSFER ||
+                ['Pending', 'Awaiting Verification', 'Waiting for WhatsApp Contact', 'Awaiting Transfer'].includes(r.status as string)
+              );
+              return (
+                <div className="space-y-3 bg-amber-50/50 border border-amber-200 p-5 rounded-3xl">
+                  <div className="flex items-center justify-between pb-2 border-b border-amber-200/60">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                      <h4 className="text-xs font-extrabold text-amber-900 uppercase tracking-wider">
+                        Pending Deposit Approvals ({pendingList.length})
+                      </h4>
+                    </div>
+                    <span className="text-[10px] text-amber-700 font-semibold">Live MySQL Pending Queue</span>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-extrabold text-amber-900 uppercase tracking-wider">
-                      Pending Deposit Approvals ({
-                        depositRequests.filter(r => 
-                          r.status === DepositRequestStatus.PENDING ||
-                          r.status === DepositRequestStatus.AWAITING_VERIFICATION ||
-                          r.status === DepositRequestStatus.WAITING_WHATSAPP ||
-                          r.status === DepositRequestStatus.AWAITING_TRANSFER ||
-                          ['Pending', 'Awaiting Verification', 'Waiting for WhatsApp Contact', 'Awaiting Transfer'].includes(r.status as string)
-                        ).length
-                      })
-                    </h4>
-                    <p className="text-[11px] text-amber-800 font-medium">Customer deposit requests are awaiting your verification and account crediting.</p>
-                  </div>
+
+                  {pendingList.length > 0 ? (
+                    <div className="divide-y divide-amber-200/50">
+                      {pendingList.map(req => (
+                        <div key={req.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] bg-white text-slate-800 border border-slate-200 font-mono font-bold px-1.5 py-0.5 rounded-sm">
+                                {req.id}
+                              </span>
+                              <strong className="text-xs font-extrabold text-slate-900">{formatMoney(req.amount)}</strong>
+                              <span className="text-[10px] text-amber-800 font-medium">Goal: <strong className="text-jolas-green-primary">{req.goalName}</strong></span>
+                            </div>
+                            <p className="text-[11px] text-slate-600 font-medium">
+                              Customer: <strong className="text-slate-800">{req.customerName}</strong> (@{req.customerUsername}) &bull; Tel: <span className="font-mono">{req.customerPhone}</span>
+                            </p>
+                            <p className="text-[9px] text-slate-400 font-mono">Date: {req.createdAt}</p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => onVerifyDepositRequest(req.id, 'reject', 'Declined by admin')}
+                              className="px-3 py-1.5 border border-red-200 text-red-700 bg-white hover:bg-red-50 text-[10px] font-bold rounded-xl cursor-pointer shadow-2xs"
+                            >
+                              Decline
+                            </button>
+                            <button
+                              onClick={() => onVerifyDepositRequest(req.id, 'credit')}
+                              className="px-4 py-1.5 bg-jolas-green-primary hover:bg-jolas-green-dark text-white text-[10px] font-bold rounded-xl cursor-pointer shadow-xs"
+                            >
+                              Approve Deposit
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-amber-800 font-medium py-2">No pending deposit requests awaiting confirmation.</p>
+                  )}
                 </div>
-                <button
-                  onClick={() => handleTabChange('deposits')}
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-                >
-                  Review &amp; Approve Deposits →
-                </button>
-              </div>
-            )}
+              );
+            })()}
 
             <div className="flex items-center justify-between pb-2 border-b">
               <h3 className="font-bold text-xs text-slate-400 uppercase tracking-wider">Awaiting Settlement Approvals</h3>
