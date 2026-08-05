@@ -124,10 +124,14 @@ export default function App() {
     };
   }, []);
 
-  // Re-fetch live MySQL data whenever navigation view changes (e.g. entering Admin Dashboard)
+  // Re-fetch live MySQL data whenever navigation view changes and poll every 5 seconds for real-time cross-tab synchronization
   useEffect(() => {
     if (sessionState === 'app') {
       InforgeBaaS.initialize();
+      const pollInterval = setInterval(() => {
+        InforgeBaaS.initialize();
+      }, 5000);
+      return () => clearInterval(pollInterval);
     }
   }, [currentView, sessionState]);
 
